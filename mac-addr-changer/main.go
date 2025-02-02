@@ -8,6 +8,59 @@ import (
 	"os/exec"
 )
 
+// Change MAC address using `ip` instead of `ifconfig`
+func changeMacAddressIpCommand(interfaceName string) error {
+	// generate a random mac address
+	newMacAddress := generateRandomMac()
+
+	// Bring the interface down
+	if err := executeCommand("sudo",
+		[]string{"ip", "link", "set", interfaceName, "down"}); err != nil {
+		return fmt.Errorf("failed to bring interface down: %v", err)
+	}
+
+	// Change the MAC address
+	if err := executeCommand("sudo",
+		[]string{"ip", "link", "set", interfaceName, "address", newMacAddress}); err != nil {
+		return fmt.Errorf("failed to change MAC address: %v", err)
+	}
+
+	// Bring the interface up
+	if err := executeCommand("sudo",
+		[]string{"ip", "link", "set", interfaceName, "up"}); err != nil {
+		return fmt.Errorf("failed to bring interface up: %v", err)
+	}
+
+	return nil
+}
+
+// changeMacAddress changes the MAC address of the given interface.
+func changeMacAddressIfConfig(interfaceName string) error {
+	// generate a random mac address
+	newMacAddress := generateRandomMac()
+
+	// Bring the interface down
+	if err := executeCommand("sudo",
+		[]string{"ifconfig", interfaceName, "down"}); err != nil {
+		return fmt.Errorf("failed to bring interface down: %v", err)
+	}
+
+	// Change the MAC address
+	if err := executeCommand("sudo",
+		[]string{"ifconfig", interfaceName, "hw", "ether", newMacAddress}); err != nil {
+		return fmt.Errorf("failed to change MAC address: %v", err)
+	}
+
+	// Bring the interface up
+
+	if err := executeCommand("sudo",
+		[]string{"ifconfig", interfaceName, "up"}); err != nil {
+		return fmt.Errorf("failed to bring interface up: %v", err)
+	}
+
+	return nil
+}
+
 // executeCommand takes the command and its args and run it or return an error
 func executeCommand(command string, args []string) error {
 	cmd := exec.Command(command, args...)
@@ -17,32 +70,6 @@ func executeCommand(command string, args []string) error {
 	err := cmd.Run()
 	if err != nil {
 		return err
-	}
-
-	return nil
-}
-
-// Change MAC address using `ip` instead of `ifconfig`
-func changeMacAddressIpCommand(interfaceName string) error {
-	// generate a random mac address
-	newMacAddress := generateRandomMac()
-
-	// Bring the interface down
-	if err := executeCommand("sudo ip link set",
-		[]string{interfaceName, "down"}); err != nil {
-		return fmt.Errorf("failed to bring interface down: %v", err)
-	}
-
-	// Change the MAC address
-	if err := executeCommand("sudo ip link set",
-		[]string{interfaceName, "address", newMacAddress}); err != nil {
-		return fmt.Errorf("failed to change MAC address: %v", err)
-	}
-
-	// Bring the interface up
-	if err := executeCommand("sudo ip link set",
-		[]string{interfaceName, "up"}); err != nil {
-		return fmt.Errorf("failed to bring interface up: %v", err)
 	}
 
 	return nil
@@ -69,33 +96,6 @@ func generateRandomMac() string {
 func randInt(min, max int) int {
 	n, _ := rand.Int(rand.Reader, big.NewInt(int64(max-min)))
 	return int(n.Int64()) + min
-}
-
-// changeMacAddress changes the MAC address of the given interface.
-func changeMacAddressIfConfig(interfaceName string) error {
-	// generate a random mac address
-	newMacAddress := generateRandomMac()
-
-	// Bring the interface down
-	if err := executeCommand("sudo ifconfig",
-		[]string{interfaceName, "down"}); err != nil {
-		return fmt.Errorf("failed to bring interface down: %v", err)
-	}
-
-	// Change the MAC address
-	if err := executeCommand("sudo ifconfig",
-		[]string{interfaceName, "hw", "ether", newMacAddress}); err != nil {
-		return fmt.Errorf("failed to change MAC address: %v", err)
-	}
-
-	// Bring the interface up
-
-	if err := executeCommand("sudo ifconfig",
-		[]string{interfaceName, "up"}); err != nil {
-		return fmt.Errorf("failed to bring interface up: %v", err)
-	}
-
-	return nil
 }
 
 func main() {
