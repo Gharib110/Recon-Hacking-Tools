@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"bytes"
 	"encoding/xml"
 	"regexp"
 )
@@ -30,4 +31,15 @@ type XRef struct {
 	StartID   int
 	Count     int
 	ObjectRef []XRefObject
+}
+
+func NewPDFData(buf []byte, stripNewLines bool) PDFBytes {
+	var ret PDFBytes
+	b := bytes.Trim(buf, "\x20\x09\x00\x0C")
+	if stripNewLines {
+		b = bytes.Replace(b, []byte("\x0A"), []byte{}, -1)
+		b = bytes.Replace(b, []byte("\x0D"), []byte{}, -1)
+	}
+	ret = PDFBytes(b)
+	return ret
 }
