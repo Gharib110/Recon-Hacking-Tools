@@ -5,3 +5,5 @@
 - Concurrent UDP and TCP port-scanner
 - A echo server 
 - Shodan search
+- Metasploit Connector with RPC calls
+- Bing Metadata Parser (XML, PDF)
