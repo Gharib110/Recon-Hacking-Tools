@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-// sniffTCPPort get network interface and tcp port number to sniff
+// SniffTCPPort get network interface and tcp port number to sniff
 func sniffTCPPort(port int, iface string) {
 	var snapshotLen = int32(1600)
 	var promiscuous = false
@@ -47,10 +47,10 @@ func sniffTCPPort(port int, iface string) {
 
 }
 
-// sniffFTP try to get USER and PASS from raw FTP proto packets
-func sniffFTP(port int, iface string) {
+// SniffFTP try to get USER and PASS from raw FTP proto packets
+func SniffFTP(iface string) {
 	var (
-		snaplen     = int32(1600)
+		snapshotLen = int32(1600)
 		promiscuous = false
 		timeout     = pcap.BlockForever
 		filter      = "tcp and dst port 21"
@@ -71,7 +71,7 @@ func sniffFTP(port int, iface string) {
 		log.Panicf("Device named '%s' does not exist\n", iface)
 	}
 
-	handle, err := pcap.OpenLive(iface, snaplen, promiscuous, timeout)
+	handle, err := pcap.OpenLive(iface, snapshotLen, promiscuous, timeout)
 	if err != nil {
 		log.Panicln(err)
 	}
