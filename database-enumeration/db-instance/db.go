@@ -1,4 +1,4 @@
-package database_enumeration
+package db_instance
 
 import (
 	"fmt"
@@ -47,6 +47,7 @@ func Search(m DBInstance) error {
 
 // getRegex sample important regex of a database
 // should determine the structures of a DB then create regex for data inside of it
+// I supposed the DB contains these records !
 func getRegex() []*regexp.Regexp {
 	return []*regexp.Regexp{
 		regexp.MustCompile(`(?i)social`),
